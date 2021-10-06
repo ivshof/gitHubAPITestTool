@@ -15,6 +15,7 @@ logging.basicConfig(filename='log.txt', level=logging.INFO, format='%(asctime)s 
 def main():
 
     envPossibleValues = ['dev', 'sit', 'qa', 'prod']
+    filterConfigFile = '.yaml'
 
     # Ensure correct usage of input parameters
     if len(sys.argv) < 4 or len(sys.argv) > 6:
@@ -42,11 +43,9 @@ def main():
     g = Github(apiToken)
     repo = g.get_repo(repoValue)
 
-
-
-    repos = g.get_repo(repoValue)
-    pprint("repos = g.get_repo(ivshof/gitHabAPITest2")
-    pprint(f"repos = {repos}")
+    # repos = g.get_repo(repoValue)
+    # pprint("repos = g.get_repo(ivshof/gitHabAPITest2")
+    # pprint(f"repos = {repos}")
 
 
     # Get the full list of repos for a user
@@ -58,14 +57,11 @@ def main():
     # for content_file in content:
     #     print(content_file)
 
-
-
     repo = g.get_repo(repoValue)
     print("Branches:")
     branches = repo.get_branches()
     for branch in branches:
         print(branch)
-
 
     # Get the latest SHA for scpecidied environment (branch) in case it was not provided by the user
     if commitHash == 'none':
@@ -75,12 +71,8 @@ def main():
         commitHash = latestCommitSHA
         print(f"latestCommitSHA = {latestCommitSHA}")
 
-    repos = repo.get_commit(sha="ef159d2abe5474f981e5cf8ddf0f75c539054abb")
-    print(f"repos.commit =  {repos.files}")
-    # print(f"element repos.files[0] = {repos.files[0]}")
-    # print(f"element repos.files[0] = {repos.files[0]}")
-    # if "log.txt" in repos.files:
-    #     print("paass")
+    #repos = repo.get_commit(sha="ef159d2abe5474f981e5cf8ddf0f75c539054abb")
+    #print(f"repos.commit =  {repos.files}")
 
     # Get commit hashes for all comits in branch (env)
     repo = g.get_repo(repoValue)
@@ -89,52 +81,84 @@ def main():
     for element in commits:
         print(f"element = {element}")
 
-
         #
         # if len(element.files) > 0:
         #     print(type(element.files[0]))
         #     print(f"element = {element.files[0]}")
         #     print(f"element = {element.files}")
 
-
-
     # print(f"commits =  {commits}")
 
-    #Get the parent SHA
+    # Get details about specified commit hash
     print(f"ComitSHA = {commitHash}")
-    repos = repo.get_commit(sha=commitHash)
-    raw_data = repos.raw_data
-    print("raw data:")
-    print(raw_data)
-    #print(raw_data['files'])
-    #print(type(raw_data['files'][0]))
-    print(f"filename = {raw_data['files'][0]['filename']}")
-    print(f"sha = {raw_data['files'][0]['sha']}")
-    print(f"parentSHA = {raw_data['parents'][0]['sha']}")
-    #print(f"raw_data = {raw_data}")
+    response = repo.get_commit(sha=commitHash).raw_data
 
-    print(type(repos.commit.parents))
-    print(f'repos.commit.parents = {repos.commit.parents}')
+    # print("raw data:")
+    # print(response)
+
+    parentCommitHash = response['parents'][0]['sha']
+    print(f"parentCommitHash = {parentCommitHash}")
+
+    # Check if configuration (yaml) files were modified
+    configFileChanges = []
+    for file in range(len(response['files'])):
+        fileName = response['files'][file]['filename']
+        if filterConfigFile in fileName:
+            shaForTheFileName = response['files'][file]['sha']
+            configFileChanges.append({"filename": fileName, "sha": shaForTheFileName})
+
+    if len(configFileChanges) == 0:
+        print("No configuration (yaml) files were modified!")
+        return
+
+    print(configFileChanges)
+
+
+
+    # for file in raw_data['files']:
+    #     print(f"FILE =  {raw_data['files'][file]['filename']}")
+
+    # print(type(repos.commit.parents))
+    # print(f'repos.commit.parents = {repos.commit.parents}')
 
     #print(repos.commit.parents['sha'])
-    for i in repos.commit.parents:
-        print(type(i))
-        print(i)
+
+    print(f"configFileChanges = {len(configFileChanges)}")
+
+    diffCompare = repo.compare(parentCommitHash, commitHash).raw_data
+   # print(f"diffCompare = {diffCompare}")
+    for file in range(len(diffCompare['files'])):
+        fileName = response['files'][file]['filename']
+        print(f"fileName = {fileName}")
+        if filterConfigFile in fileName:
+            contents_url = response['files'][file]['contents_url']
+            print(f">>>> Diff Changes for {fileName} contents_url={contents_url} \nFor Commits {parentCommitHash} -> {commitHash}:")
+
+            comitDiffText = response['files'][file]['patch']
+            print(comitDiffText)
+
+            print(f"contents_url = {contents_url}")
+
+
+
+    # print(f"diff_url = {diffCompare.diff_url}")
+    # print(f"diffCompare.total_commits = {diffCompare.total_commits}")
+    # print(f"diffCompare.files = {diffCompare.files}")
 
 
 
 
 
-    diffCompare= repo.compare('aa342a24b55bd5824d661663a774c7cf4a2ffa6f', '3371ae298fbcf5c4dbfdf865137a8366e6a834f9')
-    print(diffCompare.diff_url)
-
-    print(type(diffCompare.files))
-    for i in diffCompare.files:
-        print(i)
-        print(type(i))
-
-
-
+    # for element in range(len(configFileChanges)):
+    #     print(configFileChanges[element]['filename'])
+    #     print(commitHash)
+    #     #print(configFileChanges[element]['sha'])
+    #
+    #     comitToCompare = configFileChanges[element]['sha']
+    #
+    #     diffCompare= repo.compare(str(commitHash), str(comitToCompare))
+    #     print(diffCompare.diff_url)
+    #     print(type(diffCompare.files))
 
 
 
