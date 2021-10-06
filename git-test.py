@@ -102,8 +102,6 @@ def main():
         print(i)
         print(type(i))
 
-    github.File.File.
-
 
 
 
