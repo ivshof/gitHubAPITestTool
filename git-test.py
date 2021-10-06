@@ -46,12 +46,7 @@ def main():
 
     repo = g.get_repo(repoValue)
 
-    repos = repo.get_commit(sha="bf22201")
-    print(f"repos.commit =  {repos}")
-    commits = repo.get_commits(sha='prod')
-    for element in commits:
-        print(element)
-    #print(f"commits =  {commits}")
+
 
     repos = g.get_repo(repoValue)
     pprint("repos = g.get_repo(ivshof/gitHabAPITest2")
@@ -81,15 +76,33 @@ def main():
         commitHash = latestCommitSHA
         print(f"latestCommitSHA = {latestCommitSHA}")
 
+    repos = repo.get_commit(sha="bf22201")
+    print(f"repos.commit =  {repos}")
+
+    # Get commit hashes for all comits in branch (env)
+    commits = repo.get_commits(sha=environment)
+    print(f"comits in {environment} branch:")
+    for element in commits:
+        print(element)
+    # print(f"commits =  {commits}")
 
     #Get the parent SHA
     repos = repo.get_commit(sha=commitHash)
+    print(type(repos.commit.parents))
     print(repos.commit.parents)
+    for i in repos.commit.parents:
+        print(i)
 
-    diffCompare= repo.compare('bf222011ffc20947778cac86da6b03ec07388bcd', '321ced789d79886f4f58c880bec580377e51ec35')
+    diffCompare= repo.compare('aa342a24b55bd5824d661663a774c7cf4a2ffa6f', '3371ae298fbcf5c4dbfdf865137a8366e6a834f9')
     print(diffCompare.diff_url)
-    print(diffCompare.files)
 
+    print(diffCompare.files)
+    print(type(diffCompare.files))
+    for i in diffCompare.files:
+        print(i)
+        print(type(i))
+
+    github.File.File.
 
 
 
