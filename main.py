@@ -15,9 +15,6 @@ if __name__ == '__main__':
     #Test comment 2_12
     #Test 34
 
-    #ONe more comment
-    #one more_
-    #Update the file
 
     print_hi('PyCharm')
 

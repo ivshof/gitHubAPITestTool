@@ -58,10 +58,10 @@ def main():
     #     print(content_file)
 
     repo = g.get_repo(repoValue)
-    print("Branches:")
-    branches = repo.get_branches()
-    for branch in branches:
-        print(branch)
+    # print("Branches:")
+    # branches = repo.get_branches()
+    # for branch in branches:
+    #     print(branch)
 
     # Get the latest SHA for scpecidied environment (branch) in case it was not provided by the user
     if commitHash == 'none':
@@ -76,10 +76,10 @@ def main():
 
     # Get commit hashes for all comits in branch (env)
     repo = g.get_repo(repoValue)
-    commits = repo.get_commits(sha=environment)
-    print(f"comits in {environment} branch:")
-    for element in commits:
-        print(f"element = {element}")
+    # commits = repo.get_commits(sha=environment)
+    # print(f"comits in {environment} branch:")
+    # for element in commits:
+    #     print(f"element = {element}")
 
         #
         # if len(element.files) > 0:
