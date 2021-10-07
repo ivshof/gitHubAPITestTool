@@ -18,8 +18,9 @@ def main():
     # string that will be used to filter changes for config (yaml) files
     filterConfigFileParameter = '.yaml'
     validPaths = [
-    'config/rbac/corporate-services/admin.yaml',\
-    'config/rbac/corporate-services/readonly.yaml'
+    'config/rbac/gaming/systemusers.yaml,',\
+    'config/rbac/gaming/systemusers.yaml,',
+
     ]
 
 
