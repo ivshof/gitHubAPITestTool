@@ -13,7 +13,7 @@ python git-test.py repo apiToken environment {commitHash}
 - commitHash: hash of the commit that will be used for diff changes
 
 
-##  results
+## Results
 
 1. Identify changes related to provided commit hash or to the latest commit if the commit hash was not provided
 
