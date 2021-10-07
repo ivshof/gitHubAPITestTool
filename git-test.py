@@ -129,11 +129,15 @@ def main():
             shaForTheFileName = response['files'][file]['sha']
             configFileChanges.append({"filename": fileName, "sha": shaForTheFileName})
 
+
+
     if len(configFileChanges) == 0:
         print("No configuration (yaml) files were modified!")
         return
-
-
+    else:
+        print("Following configuration files have changes ")
+        for filenames in configFileChanges:
+            configFileChanges[filenames]
 
     # for file in raw_data['files']:
     #     print(f"FILE =  {raw_data['files'][file]['filename']}")
@@ -143,10 +147,10 @@ def main():
 
     #print(repos.commit.parents['sha'])
 
-    print(f"configFileChanges number= {len(configFileChanges)}")
+
 
     diffCompare = repo.compare(parentCommitHash, commitHash).raw_data
-    print(f"diffCompare = {diffCompare}")
+    # print(f"diffCompare = {diffCompare}")
     for file in range(len(diffCompare['files'])):
         validCheck = 'false'
         fileName = diffCompare['files'][file]['filename']
@@ -192,9 +196,6 @@ def main():
 
 
 
-
-
-            print(f"contents_url = {contents_url}")
             print("<<<<<")
 
 
