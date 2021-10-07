@@ -82,7 +82,6 @@ def main():
         for filenames in configFileChanged:
             print(filenames)
 
-
     # Compare provided (or latest commit) with the previous one
     diffCompare = repo.compare(parentCommitHash, commitHash).raw_data
 
