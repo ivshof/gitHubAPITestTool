@@ -131,18 +131,25 @@ def main():
     print(f"configFileChanges number= {len(configFileChanges)}")
 
     diffCompare = repo.compare(parentCommitHash, commitHash).raw_data
-   # print(f"diffCompare = {diffCompare}")
+    #print(f"diffCompare = {diffCompare}")
     for file in range(len(diffCompare['files'])):
-        fileName = response['files'][file]['filename']
-        print(f"fileName = {fileName}")
+        fileName = diffCompare['files'][file]['filename']
+        # print(f"fileName = {fileName}")
         if filterConfigFileParameter in fileName:
-            contents_url = response['files'][file]['contents_url']
-            print(f">>>> Diff Changes for {fileName} contents_url={contents_url} \nFor Commits {parentCommitHash} -> {commitHash}:")
+            contents_url = diffCompare['files'][file]['contents_url']
+            status = diffCompare['files'][file]['status']
+            print(f">>>>> Diff Changes for {fileName}, status = {status}, contents_url={contents_url} \nFor Commits {parentCommitHash} -> {commitHash}\n :")
 
-            comitDiffText = response['files'][file]['patch']
-            print(comitDiffText)
+            if 'patch' in diffCompare['files'][file]:
+                comitDiffText = response['files'][file]['patch']
+                print(f"CHANGES:\n====\n{comitDiffText}\n====\n")
+            else:
+                print("CHANGES:\n====\nNo changes in file content\n====\n")
+
 
             print(f"contents_url = {contents_url}")
+            print("<<<<<")
+
 
 
 
