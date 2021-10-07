@@ -15,8 +15,9 @@ python git-test.py repo apiToken environment {commitHash}
 
 ##  results
 
-Identify changes related to provided commit hash or to the latest commit if the commit hash was not provided
-Filter changes based on the configuration file extension (like '.yaml'
-Validate the location of configuration files with a hardcoded "validates" list
-For each configuration file in the list retrieve content and print it in case configuration env is enabled. Env and configurations listed in "envConfiguration"
+    Identify changes related to provided commit hash or to the latest commit if the commit hash was not provided
+    Filter changes based on the configuration file extension (like '.yaml'
+    Validate the location of configuration files with a hardcoded "validates" list
+    For each configuration file in the list retrieve content and print it in case configuration env is enabled. Env and configurations listed in "envConfiguration"
+
 
