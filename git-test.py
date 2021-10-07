@@ -52,8 +52,8 @@ def main():
     repo = g.get_repo(repoValue)
 
     # repos = g.get_repo(repoValue)
-    # pprint("repos = g.get_repo(ivshof/gitHabAPITest2")
-    # pprint(f"repos = {repos}")
+    # print("repos = g.get_repo(ivshof/gitHabAPITest2")
+    # print(f"repos = {repos}")
 
 
     # Get the latest SHA for scpecidied environment (branch) in case it was not provided by the user
@@ -64,9 +64,24 @@ def main():
         commitHash = latestCommitSHA
         print(f"latestCommitSHA = {latestCommitSHA}")
 
-    contents = repo.get_contents("config/rbac/gaming/allusers.yaml").content
-    contents = base64ToString(contents)
-    print(f"contents =  {contents}")
+    # ==============================
+    # path ='{config/rbac/gaming/allusers.yaml}'
+    #
+    # contents = repo.get_contents("")
+    # while contents:
+    #     file_content = contents.pop(0)
+    #     if file_content.type == "dir":
+    #
+    #         contents.extend(repo.get_contents(file_content.path))
+    #     else:
+    #         print(file_content)
+
+    # for file in contents:
+    #     print(file)
+    # repo.get_contents()
+
+    # contents = base64ToString(contents)
+    # print(f"contents =  {contents}")
 
 
     #repos = repo.get_commit(sha="ef159d2abe5474f981e5cf8ddf0f75c539054abb")
@@ -121,7 +136,7 @@ def main():
     print(f"configFileChanges number= {len(configFileChanges)}")
 
     diffCompare = repo.compare(parentCommitHash, commitHash).raw_data
-    #print(f"diffCompare = {diffCompare}")
+    print(f"diffCompare = {diffCompare}")
     for file in range(len(diffCompare['files'])):
         validCheck = 'false'
         fileName = diffCompare['files'][file]['filename']
@@ -130,6 +145,7 @@ def main():
             contents_url = diffCompare['files'][file]['contents_url']
             status = diffCompare['files'][file]['status']
             print(f">>>>> Diff Changes for FILE = {fileName},\nstatus = {status},\ncontents_url={contents_url} \nFor Commits {parentCommitHash} -> {commitHash}")
+
 
             if fileName in validPaths:
                 print("File location is valid")
@@ -157,8 +173,8 @@ def main():
                         print(f"fileName= {fileName}")
 
 
-                        contents = repo.get_contents(str(fileName))
-                        print(f"contents = {contents}")
+                        # contents = repo.get_contents(str(fileName))
+                        # print(f"contents = {contents}")
 
 
                     else:
