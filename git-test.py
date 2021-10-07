@@ -9,8 +9,11 @@ import base64
 def main():
 
     envPossibleValues = ['dev', 'sit', 'qa', 'prod']
+
     # string that will be used to filter changes for config (yaml) files
     filterConfigFileParameter = '.yaml'
+
+    # valid paths to configuration files
     validPaths = ['config/rbac/corporate-services/admin.yaml',
                   'config/rbac/corporate-services/readonly.yaml',
                   'config/rbac/gaming/allusers.yaml',
@@ -51,6 +54,7 @@ def main():
     g = Github(apiToken)
     repo = g.get_repo(repoValue)
 
+
     # repos = g.get_repo(repoValue)
     # print("repos = g.get_repo(ivshof/gitHabAPITest2")
     # print(f"repos = {repos}")
@@ -64,10 +68,13 @@ def main():
         commitHash = latestCommitSHA
         print(f"latestCommitSHA = {latestCommitSHA}")
 
+
+    contents = repo.get_contents
+
     # ==============================
     # path ='{config/rbac/gaming/allusers.yaml}'
     #
-    # contents = repo.get_contents("")
+    # contents = repo.get_contents("", ref='dev')
     # while contents:
     #     file_content = contents.pop(0)
     #     if file_content.type == "dir":
@@ -79,9 +86,12 @@ def main():
     # for file in contents:
     #     print(file)
     # repo.get_contents()
+    contents = repo.get_contents('config/rbac/gaming/systemusers.yaml', ref=environment)
+    #print(f"contents =  {contents}")
+    contents = contents.content
 
-    # contents = base64ToString(contents)
-    # print(f"contents =  {contents}")
+    contents = base64ToString(contents)
+    print(f"contents : \n  {contents}")
 
 
     #repos = repo.get_commit(sha="ef159d2abe5474f981e5cf8ddf0f75c539054abb")
