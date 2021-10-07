@@ -1,5 +1,5 @@
 # GIT HUB API Test tool
-It is a simple git hub api test tool powered by PyGithub (https://github.com/PyGithub/PyGithub)
+It is a simple git hub api test tool powered by [PyGithub](https://github.com/PyGithub/PyGithub)
 
 ## How to use
 ```javascript
