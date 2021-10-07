@@ -1,15 +1,8 @@
 # Test tool to check git hub commit changes
 
 import sys
-import logging
 from github import Github
 import os
-from pprint import pprint
-
-logging.basicConfig(filename='log.txt', level=logging.INFO, format='%(asctime)s %(message)s')
-
-
-
 
 
 def main():
@@ -18,16 +11,20 @@ def main():
     # string that will be used to filter changes for config (yaml) files
     filterConfigFileParameter = '.yaml'
     validPaths = [
-    'config/rbac/gaming/systemusers.yaml,',\
-    'config/rbac/gaming/systemusers.yaml,',
-
-    ]
+        'config/rbac/corporate-services/admin.yaml',
+        'config/rbac/corporate-services/readonly.yaml',
+        'config/rbac/gaming/allusers.yaml',
+        'config/rbac/gaming/systemusers.yaml',
+        'config/topics/corporate-services/admin.yaml',
+        'config/topics/corporate-services/readonly.yaml',
+        'config/topics/gaming/allusers.yaml',
+        'config/topics/gaming/systemusers.yaml']
 
 
 
     # Ensure correct usage of input parameters
     if len(sys.argv) < 4 or len(sys.argv) > 6:
-        logging.info("Input parameters ERROR")
+        print("Input parameters ERROR")
         sys.exit("Usage: python git-test.py repo apiToken environment {commitHash}")
 
     elif len(sys.argv) == 4:
@@ -42,10 +39,10 @@ def main():
 
     # Check if environment is in list of possible values
     if environment not in envPossibleValues:
-        logging.info("Input environment value ERROR")
+        print("Input environment value ERROR")
         sys.exit("Usage: 'environment' possible values: dev, sit, qa, prod")
 
-    logging.info(f"Entered input parameters. repo = {repoValue}, apiToken = {apiToken}, environment = {environment}, commitHash = {commitHash}")
+    print(f"Entered input parameters. repo = {repoValue}, apiToken = {apiToken}, environment = {environment}, commitHash = {commitHash}")
 
     # Connecting to git hub
     g = Github(apiToken)
@@ -136,16 +133,25 @@ def main():
     for file in range(len(diffCompare['files'])):
         fileName = diffCompare['files'][file]['filename']
         # print(f"fileName = {fileName}")
+
         if filterConfigFileParameter in fileName:
+            if fileName in validPaths:
+                print("File location is valid")
+            else:
+                print("File location is NOT valid")
+
             contents_url = diffCompare['files'][file]['contents_url']
             status = diffCompare['files'][file]['status']
-            print(f">>>>> Diff Changes for {fileName}, status = {status}, contents_url={contents_url} \nFor Commits {parentCommitHash} -> {commitHash}\n :")
+            print(f">>>>> Diff Changes for FILE = {fileName},\n status = {status},\n contents_url={contents_url} \nFor Commits {parentCommitHash} -> {commitHash}")
 
             if 'patch' in diffCompare['files'][file]:
                 comitDiffText = response['files'][file]['patch']
                 print(f"CHANGES:\n====\n{comitDiffText}\n====\n")
             else:
                 print("CHANGES:\n====\nNo changes in file content\n====\n")
+
+
+            if validPaths
 
 
             print(f"contents_url = {contents_url}")
