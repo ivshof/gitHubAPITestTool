@@ -3,6 +3,7 @@
 import sys
 from github import Github
 import os
+import base64
 
 
 def main():
@@ -10,15 +11,17 @@ def main():
     envPossibleValues = ['dev', 'sit', 'qa', 'prod']
     # string that will be used to filter changes for config (yaml) files
     filterConfigFileParameter = '.yaml'
-    validPaths = [
-        'config/rbac/corporate-services/admin.yaml',
-        'config/rbac/corporate-services/readonly.yaml',
-        'config/rbac/gaming/allusers.yaml',
-        'config/rbac/gaming/systemusers.yaml',
-        'config/topics/corporate-services/admin.yaml',
-        'config/topics/corporate-services/readonly.yaml',
-        'config/topics/gaming/allusers.yaml',
-        'config/topics/gaming/systemusers.yaml']
+    validPaths = ['config/rbac/corporate-services/admin.yaml',
+                  'config/rbac/corporate-services/readonly.yaml',
+                  'config/rbac/gaming/allusers.yaml',
+                  'config/rbac/gaming/systemusers.yaml',
+                  'config/topics/corporate-services/admin.yaml',
+                  'config/topics/corporate-services/readonly.yaml',
+                  'config/topics/gaming/allusers.yaml',
+                  'config/topics/gaming/systemusers.yaml']
+
+    envConfiguration = {'rbac': {'dev': 'true', 'sit': 'true', 'qa': 'false', 'prod':'false'},
+                        'topics': {'dev': 'true', 'sit': 'true', 'qa': 'false', 'prod': 'false'}}
 
 
 
@@ -42,7 +45,7 @@ def main():
         print("Input environment value ERROR")
         sys.exit("Usage: 'environment' possible values: dev, sit, qa, prod")
 
-    print(f"Entered input parameters. repo = {repoValue}, apiToken = {apiToken}, environment = {environment}, commitHash = {commitHash}")
+    print(f"Entered input parameters. repo = {repoValue}, apiToken = *****, environment = {environment}, commitHash = {commitHash}")
 
     # Connecting to git hub
     g = Github(apiToken)
@@ -53,21 +56,6 @@ def main():
     # pprint(f"repos = {repos}")
 
 
-    # Get the full list of repos for a user
-    # for repo in g.get_user().get_repos():
-    #     print(repo.name)
-
-    # Print content files
-    # content = repo.get_contents("")
-    # for content_file in content:
-    #     print(content_file)
-
-    repo = g.get_repo(repoValue)
-    # print("Branches:")
-    # branches = repo.get_branches()
-    # for branch in branches:
-    #     print(branch)
-
     # Get the latest SHA for scpecidied environment (branch) in case it was not provided by the user
     if commitHash == 'none':
         latestCommit = g.get_repo(repoValue).get_branch(environment)
@@ -76,11 +64,15 @@ def main():
         commitHash = latestCommitSHA
         print(f"latestCommitSHA = {latestCommitSHA}")
 
+    contents = repo.get_contents("config/rbac/gaming/allusers.yaml").content
+    contents = base64ToString(contents)
+    print(f"contents =  {contents}")
+
+
     #repos = repo.get_commit(sha="ef159d2abe5474f981e5cf8ddf0f75c539054abb")
     #print(f"repos.commit =  {repos.files}")
 
     # Get commit hashes for all comits in branch (env)
-    repo = g.get_repo(repoValue)
     # commits = repo.get_commits(sha=environment)
     # print(f"comits in {environment} branch:")
     # for element in commits:
@@ -95,7 +87,7 @@ def main():
     # print(f"commits =  {commits}")
 
     # Get details about specified commit hash
-    print(f"CommitSHA = {commitHash}")
+    # print(f"CommitSHA = {commitHash}")
     response = repo.get_commit(sha=commitHash).raw_data
 
     # print("raw data:")
@@ -131,18 +123,20 @@ def main():
     diffCompare = repo.compare(parentCommitHash, commitHash).raw_data
     #print(f"diffCompare = {diffCompare}")
     for file in range(len(diffCompare['files'])):
+        validCheck = 'false'
         fileName = diffCompare['files'][file]['filename']
-        # print(f"fileName = {fileName}")
 
         if filterConfigFileParameter in fileName:
-            if fileName in validPaths:
-                print("File location is valid")
-            else:
-                print("File location is NOT valid")
-
             contents_url = diffCompare['files'][file]['contents_url']
             status = diffCompare['files'][file]['status']
-            print(f">>>>> Diff Changes for FILE = {fileName},\n status = {status},\n contents_url={contents_url} \nFor Commits {parentCommitHash} -> {commitHash}")
+            print(f">>>>> Diff Changes for FILE = {fileName},\nstatus = {status},\ncontents_url={contents_url} \nFor Commits {parentCommitHash} -> {commitHash}")
+
+            if fileName in validPaths:
+                print("File location is valid")
+                validCheck = 'true'
+
+            else:
+                print("File location is NOT valid")
 
             if 'patch' in diffCompare['files'][file]:
                 comitDiffText = response['files'][file]['patch']
@@ -151,20 +145,31 @@ def main():
                 print("CHANGES:\n====\nNo changes in file content\n====\n")
 
 
-            if validPaths
+            if validCheck == 'true':
+                print('validCheck Passed')
+                pathList = fileName.split("/")
+                print(pathList)
+                obtainedEngCfg = pathList[1]
+                if obtainedEngCfg in envConfiguration:
+                    if envConfiguration[obtainedEngCfg][environment] == 'true':
+                        print(f"PASS - {envConfiguration[obtainedEngCfg][environment]}")
+                        print(envConfiguration[obtainedEngCfg][environment])
+                        print(f"fileName= {fileName}")
+
+
+                        contents = repo.get_contents(str(fileName))
+                        print(f"contents = {contents}")
+
+
+                    else:
+                        print(f"NOT PASS - {envConfiguration[obtainedEngCfg][environment]}")
+
+
+
 
 
             print(f"contents_url = {contents_url}")
             print("<<<<<")
-
-
-
-
-    # print(f"diff_url = {diffCompare.diff_url}")
-    # print(f"diffCompare.total_commits = {diffCompare.total_commits}")
-    # print(f"diffCompare.files = {diffCompare.files}")
-
-
 
 
 
@@ -179,7 +184,8 @@ def main():
     #     print(diffCompare.diff_url)
     #     print(type(diffCompare.files))
 
-
+def base64ToString(text):
+    return base64.b64decode(text).decode('utf-8')
 
 if __name__ == "__main__":
     main()
