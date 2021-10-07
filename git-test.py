@@ -15,7 +15,14 @@ logging.basicConfig(filename='log.txt', level=logging.INFO, format='%(asctime)s 
 def main():
 
     envPossibleValues = ['dev', 'sit', 'qa', 'prod']
-    filterConfigFile = '.yaml'
+    # string that will be used to filter changes for config (yaml) files
+    filterConfigFileParameter = '.yaml'
+    validPaths = [
+    'config/rbac/corporate-services/admin.yaml',\
+    'config/rbac/corporate-services/readonly.yaml'
+    ]
+
+
 
     # Ensure correct usage of input parameters
     if len(sys.argv) < 4 or len(sys.argv) > 6:
@@ -49,8 +56,8 @@ def main():
 
 
     # Get the full list of repos for a user
-    for repo in g.get_user().get_repos():
-        print(repo.name)
+    # for repo in g.get_user().get_repos():
+    #     print(repo.name)
 
     # Print content files
     # content = repo.get_contents("")
@@ -90,7 +97,7 @@ def main():
     # print(f"commits =  {commits}")
 
     # Get details about specified commit hash
-    print(f"ComitSHA = {commitHash}")
+    print(f"CommitSHA = {commitHash}")
     response = repo.get_commit(sha=commitHash).raw_data
 
     # print("raw data:")
@@ -103,15 +110,13 @@ def main():
     configFileChanges = []
     for file in range(len(response['files'])):
         fileName = response['files'][file]['filename']
-        if filterConfigFile in fileName:
+        if filterConfigFileParameter in fileName:
             shaForTheFileName = response['files'][file]['sha']
             configFileChanges.append({"filename": fileName, "sha": shaForTheFileName})
 
     if len(configFileChanges) == 0:
         print("No configuration (yaml) files were modified!")
         return
-
-    print(configFileChanges)
 
 
 
@@ -123,14 +128,14 @@ def main():
 
     #print(repos.commit.parents['sha'])
 
-    print(f"configFileChanges = {len(configFileChanges)}")
+    print(f"configFileChanges number= {len(configFileChanges)}")
 
     diffCompare = repo.compare(parentCommitHash, commitHash).raw_data
    # print(f"diffCompare = {diffCompare}")
     for file in range(len(diffCompare['files'])):
         fileName = response['files'][file]['filename']
         print(f"fileName = {fileName}")
-        if filterConfigFile in fileName:
+        if filterConfigFileParameter in fileName:
             contents_url = response['files'][file]['contents_url']
             print(f">>>> Diff Changes for {fileName} contents_url={contents_url} \nFor Commits {parentCommitHash} -> {commitHash}:")
 
